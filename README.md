@@ -1,2 +1,2 @@
 # gravity.js
-Make scroll bars obey the laws of physics.
+Make scroll bars obey the laws of physics. Sort of.
