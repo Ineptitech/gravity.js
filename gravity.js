@@ -108,6 +108,7 @@ window.onmousedown = function(e) {
     onScrollBar = clickedOnScrollbar(e.clientX);
     if (animationHandle && onScrollBar) {
         animationHandle.animating = false;
+        animationHandle = null;
     }
 };
 
