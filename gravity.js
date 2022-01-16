@@ -58,7 +58,6 @@ var startAnimation = function() {
     var currentVelocity = 0;
     var maxVelocity = Math.sqrt((1 - getScrollRatio()) * GRAVITY * 2);
 
-    // https://physics.stackexchange.com/questions/256468/model-formula-for-bouncing-ball
     var lastTime = performance.now();
     requestAnimationFrame(function animateImpl(step) {
         // check if we're still animating
