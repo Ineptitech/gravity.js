@@ -21,17 +21,17 @@ var clickedOnScrollbar = function(mouseX) {
     if (document.body.clientWidth <= mouseX) {
         return true;
     }
-}
+};
 
 var animationHandle = null;
 
 var getScrollSize = function() {
     return document.documentElement.scrollHeight - document.documentElement.clientHeight;
-}
+};
 
 var getScrollRatio = function() {
     return document.documentElement.scrollTop / getScrollSize();
-}
+};
 
 var startAnimation = function() {
     // bail if already animating
@@ -61,6 +61,7 @@ var startAnimation = function() {
     // https://physics.stackexchange.com/questions/256468/model-formula-for-bouncing-ball
     var lastTime = performance.now();
     requestAnimationFrame(function animateImpl(step) {
+        // check if we're already animating
         if (!handleCopy.animating) {
             return;
         }
@@ -100,32 +101,38 @@ var startAnimation = function() {
         // step 
         requestAnimationFrame(animateImpl);
     });
-}
+};
 
+var onScrollBar = false;
 window.onmousedown = function(e) {
-    if (animationHandle && clickedOnScrollbar(e.clientX)) {
+    onScrollBar = clickedOnScrollbar(e.clientX);
+    if (animationHandle && onScrollBar) {
         animationHandle.animating = false;
     }
 };
 
-window.onmouseup = startAnimation;
+window.onmouseup = function() {
+    onScrollBar = false;
+};
 
-var debounce = 0;
+var debounce = performance.now();
 window.onwheel = function(e) {
     // reset animation on wheel
     if (animationHandle) {
         animationHandle.animating = false;
+        animationHandle = null;
     }
 
-    // if we have no more scroll events after a certain period of time, restart
-    debounce = Date.now();
-    setTimeout(function() {
-        if (Date.now() - debounce > 30) {
-            // restart animation
-            startAnimation();
-        }
-    }, 100);
+    // reset debounce time
+    debounce = performance.now();
 };
 
-// start first animation
-startAnimation();
+setInterval(function() {
+    if (!onScrollBar && (performance.now() - debounce > 80)) {
+        // are we not at the bottom of the page?
+        if (getScrollRatio() < 0.99) {
+            // restart animation (if not animating)
+            startAnimation();
+        }
+    }
+}, 100);
